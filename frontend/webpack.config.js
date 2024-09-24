@@ -13,8 +13,8 @@ module.exports = {
 	},
 	output:    {
 		path:          path.resolve(__dirname, 'dist'),
-		filename:      'js/[name].bundle.js',
-		chunkFilename: 'js/[name].bundle.[id].js',
+		filename:      `js/[name].bundle.js?v=${PACKAGE.version}`,
+		chunkFilename: `js/[name].bundle.[id].js?v=${PACKAGE.version}`,
 		publicPath:    '/'
 	},
 	resolve:   {
@@ -88,6 +88,18 @@ module.exports = {
 						options: {
 							outputPath: 'assets/tabler-ui/'
 						}
+					}
+				]
+			},
+			{
+				test: /source-sans-pro.*\.(woff(2)?)(\?v=\d+\.\d+\.\d+)?$/,
+				use: [
+					{
+					loader: 'file-loader',
+					options: {
+						name: '[name].[ext]',
+						outputPath: 'assets/'
+					}
 					}
 				]
 			}
