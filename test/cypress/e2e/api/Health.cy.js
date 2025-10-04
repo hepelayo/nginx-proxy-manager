@@ -1,7 +1,7 @@
-/// <reference types="Cypress" />
+/// <reference types="cypress" />
 
 describe('Basic API checks', () => {
-	it('Should return a valid health payload', function () {
+	it('Should return a valid health payload', () => {
 		cy.task('backendApiGet', {
 			path: '/api/',
 		}).then((data) => {
@@ -10,11 +10,11 @@ describe('Basic API checks', () => {
 		});
 	});
 
-	it('Should return a valid schema payload', function () {
+	it('Should return a valid schema payload', () => {
 		cy.task('backendApiGet', {
-			path: '/api/schema',
+			path: `/api/schema?ts=${Date.now()}`,
 		}).then((data) => {
-			expect(data.openapi).to.be.equal('3.0.0');
+			expect(data.openapi).to.be.equal('3.1.0');
 		});
 	});
 });

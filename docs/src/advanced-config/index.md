@@ -50,7 +50,6 @@ networks:
 Let's look at a Portainer example:
 
 ```yml
-version: '3.8'
 services:
 
   portainer:
@@ -92,8 +91,6 @@ This image supports the use of Docker secrets to import from files and keep sens
 You can set any environment variable from a file by appending `__FILE` (double-underscore FILE) to the environmental variable name.
 
 ```yml
-version: '3.8'
-
 secrets:
   # Secrets are single-line text files where the sole content is the secret
   # Paths in this example assume that secrets are kept in local folder called ".secrets"
@@ -164,6 +161,14 @@ The easy fix is to add a Docker environment variable to the Nginx Proxy Manager 
       DISABLE_IPV6: 'true'
 ```
 
+## Disabling IP Ranges Fetch
+
+By default, NPM fetches IP ranges from CloudFront and Cloudflare during application startup. In environments with limited internet access or to speed up container startup, this fetch can be disabled:
+
+```yml
+    environment:
+      IP_RANGES_FETCH_ENABLED: 'false'
+```
 
 ## Custom Nginx Configurations
 
@@ -184,6 +189,7 @@ You can add your custom configuration snippet files at `/data/nginx/custom` as f
  - `/data/nginx/custom/server_stream.conf`: Included at the end of every stream server block
  - `/data/nginx/custom/server_stream_tcp.conf`: Included at the end of every TCP stream server block
  - `/data/nginx/custom/server_stream_udp.conf`: Included at the end of every UDP stream server block
+ - `/data/nginx/custom/server_dead.conf`: Included at the end of every 404 server block
 
 Every file is optional.
 

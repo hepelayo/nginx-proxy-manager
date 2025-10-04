@@ -1,23 +1,31 @@
 #!/usr/bin/env node
 
+const schema = require('./schema');
 const logger = require('./logger').global;
+
+const IP_RANGES_FETCH_ENABLED = process.env.IP_RANGES_FETCH_ENABLED !== 'false';
 
 async function appStart () {
 	const migrate             = require('./migrate');
 	const setup               = require('./setup');
 	const app                 = require('./app');
-	const apiValidator        = require('./lib/validator/api');
 	const internalCertificate = require('./internal/certificate');
 	const internalIpRanges    = require('./internal/ip_ranges');
 
 	return migrate.latest()
 		.then(setup)
+		.then(schema.getCompiledSchema)
 		.then(() => {
-			return apiValidator.loadSchemas;
+			if (IP_RANGES_FETCH_ENABLED) {
+				logger.info('IP Ranges fetch is enabled');
+				return internalIpRanges.fetch().catch((err) => {
+					logger.error('IP Ranges fetch failed, continuing anyway:', err.message);
+				});
+			} else {
+				logger.info('IP Ranges fetch is disabled by environment variable');
+			}
 		})
-		.then(internalIpRanges.fetch)
 		.then(() => {
-
 			internalCertificate.initTimer();
 			internalIpRanges.initTimer();
 
@@ -34,7 +42,7 @@ async function appStart () {
 			});
 		})
 		.catch((err) => {
-			logger.error(err.message);
+			logger.error(err.message, err);
 			setTimeout(appStart, 1000);
 		});
 }
